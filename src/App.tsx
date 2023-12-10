@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
-
-import apiClient, {CanceledError} from './services/api-client';
-
-import UserItem from "./components/User";
-
+import {CanceledError} from './services/api-client';
+import UserItem from "./components/UserItem";
 import userService, { User } from "./services/user-service";
 
 
@@ -19,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    const {request,cancel} = userService.getAllUsers();
+    const {request,cancel} = userService.getAll<User>();
     request
     .then((results) => {
         setUsers(results.data);
@@ -36,7 +33,7 @@ const App = () => {
   const deleteUser = (user: User) => { 
     const originalUsers = [...users];
     setUsers(users.filter((x) => x.id !== user.id));
-    userService.deleteUser(user.id)
+    userService.delete(user.id)
       .catch((err) => {
         setErrorMsg(err.message);
         setUsers(originalUsers);
@@ -48,8 +45,7 @@ const App = () => {
     const newUser = {id: id,name: name,username: username,email: email};
     setUsers([newUser, ...users]);
 
-    //API
-    userService.createUser(newUser)
+    userService.create(newUser)
       .then(({ data: savedUser }) => {
         setUsers([savedUser, ...users]);
         setEmail("");
@@ -63,28 +59,17 @@ const App = () => {
       });
   };
 
-  const updateUser = (user: User) => {
 
+  const updateUser = (user: User) => {
     const originalUsers = [...users];
     const updatedUser = {
       ...user,
-      name: name,
-      username: username,
-      email: email
+      name: user.name,
+      username: user.username,
+      email: user.email
     }
-
-    console.log(name);
-    console.log(username);
-    console.log(email);  
-
     setUsers(users.map(u => u.id === user.id ? updatedUser : u));
-
-    apiClient.patch("/users/" + user.id)
-    .then((result) => {
-      console.log(result);
-      console.log(users);
-      
-    })
+    userService.update(updatedUser)
     .catch(err => {
       setErrorMsg(err.message);
       setUsers(originalUsers);
@@ -97,14 +82,13 @@ const App = () => {
         <div className="row">
           <div className="col-lg-6">
             <h3>Add new user</h3>
-
             <div className="row">
               <div className="col-sm-6">
                 <label className="form-label">ID</label>
                 <input
                   value={id}
                   onChange={(e) => {
-                    setId(e.target.value);
+                    setId(parseInt(e.target.value));
                   }}
                   type="text"
                   className="form-control"
@@ -122,7 +106,6 @@ const App = () => {
                 />
               </div>
             </div>
-
             <div className="row">
               <div className="col-sm-6">
                 <label className="form-label">Email</label>
@@ -147,7 +130,6 @@ const App = () => {
                 />
               </div>
             </div>
-
             <div className="row">
               <div className="col-sm-12">
                 <br />
@@ -158,11 +140,11 @@ const App = () => {
             </div>
           </div>
 
+
+
           <div className="col-lg-6">
             <h3>Get all users</h3>
-
             {errorMsg && <p className="text-danger">{errorMsg}</p>}
-
             {isLoading && <div className="spinner-border"></div>}
 
             <div className="accordion" id="accordionExample">
@@ -170,6 +152,8 @@ const App = () => {
                 <UserItem key={user.id} user={user} updateAction={updateUser} deleteAction={deleteUser} />
               ))}
             </div>
+
+
           </div>
         </div>
       </div>

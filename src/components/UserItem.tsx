@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { User } from "../services/user-service";
 
 interface Props {
   user: User;
@@ -6,12 +7,8 @@ interface Props {
   updateAction: (user:User) => void;
 }
 
-interface User {
-    id: number; name: string; email: string; username: string;
-}
 
-
-const User = (props: Props) => {
+const UserItem = (props: Props) => {
 
   const [id, setId] = useState(props.user.id);
   const [name, setName] = useState(props.user.name);
@@ -35,7 +32,9 @@ const User = (props: Props) => {
           data-bs-toggle="collapse"
           data-bs-target={`#collapse${props.user.id.toString()}`}
           aria-expanded="false"
-          aria-controls={`collapse${props.user.id.toString()}`}>{props.user.name}</button>
+          aria-controls={`collapse${props.user.id.toString()}`}>
+            {props.user.name}
+          </button>
       </h2>
       
       <div
@@ -52,7 +51,7 @@ const User = (props: Props) => {
               <input
                 value={id}
                 onChange={(e) => {
-                  setId(e.target.value);
+                  setId(parseInt(e.target.value));
                 }}
                 type="text"
                 className="form-control"
@@ -97,7 +96,7 @@ const User = (props: Props) => {
           <div className="row">
             <div className="col-sm-12">
               <br />
-              <button onClick={() => {props.updateAction(props.user)}} className="btn btn-warning">Update User</button>{ " " }
+              <button onClick={() => { props.updateAction({ id, name, email, username }) }} className="btn btn-warning">Update User</button>{ " " }
               <button onClick={() => {props.deleteAction(props.user)}} className="btn btn-danger">Delete User</button>
             </div>
           </div>
@@ -107,4 +106,4 @@ const User = (props: Props) => {
   );
 };
 
-export default User;
+export default UserItem;

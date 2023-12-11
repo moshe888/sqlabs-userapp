@@ -7,5 +7,4 @@ export interface User {
     username: string;
   }
 
-
 export default create('/users');

@@ -21,7 +21,7 @@ class HttpService {
     }
 
     delete(id: number) {
-        return apiClient.delete(`/${this.endpoint}/${id}`);
+        return apiClient.delete(`${this.endpoint}/${id}`);
     }
 
     create<T>(entity: T) {
@@ -29,7 +29,7 @@ class HttpService {
     }
 
     update<T extends Entity>(entity: T) {
-        return apiClient.patch(`/${this.endpoint}/${entity.id}`, entity);
+        return apiClient.patch(`${this.endpoint}/${entity.id}`, entity);
     }
 }
 

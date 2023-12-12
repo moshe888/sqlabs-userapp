@@ -1,16 +1,14 @@
-
-
 import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.API_KEY,
-  authDomain: import.meta.env.AUTH_DOMAIN,
-  projectId: import.meta.env.PROJECT_ID,
-  storageBucket: import.meta.env.STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.MESSAGING_SENDER_ID,
-  appId: import.meta.env.APP_ID
+  apiKey: "AIzaSyCHNC19WMChhyuwrSCO0tOoFh6zJ3ydEzk",
+  authDomain: "usersapp-63b84.firebaseapp.com",
+  projectId: "usersapp-63b84",
+  storageBucket: "usersapp-63b84.appspot.com",
+  messagingSenderId: "1059949275265",
+  appId: "1:1059949275265:web:6082c8ce0c94cf56f88580"
 };
 
 const app = initializeApp(firebaseConfig);
-export const database = getFirestore();
+export const database = getFirestore(app);

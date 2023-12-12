@@ -14,6 +14,7 @@ const UserItem = (props: Props) => {
   const [firstName, setFirstName] = useState(props.user.firstName);
   const [lastName, setLastName] = useState(props.user.lastName);
   const [email, setEmail] = useState(props.user.email);
+  const [avatar, setAvatar] = useState(props.user.avatar);
   const [isApproved, setIsApproved] = useState(props.user.isApproved);
 
   useEffect(() => {
@@ -46,6 +47,11 @@ const UserItem = (props: Props) => {
     
         
         <div className="accordion-body">
+          <div className="row">
+            <div className="col-sm-3">
+              <img src={avatar} style={{width:120, height:120}} />
+            </div>
+          </div>
         <div className="row">
             <div className="col-sm-6">
               <label className="form-label">First name</label>
@@ -59,7 +65,6 @@ const UserItem = (props: Props) => {
               />
             </div>
           </div>
-
           <div className="col-sm-6">
               <label className="form-label">Last name</label>
               <input
@@ -70,9 +75,7 @@ const UserItem = (props: Props) => {
                 type="email"
                 className="form-control"
               />
-            </div>
-
-
+          </div>
           <div className="row">
             <div className="col-sm-6">
               <label className="form-label">Email</label>

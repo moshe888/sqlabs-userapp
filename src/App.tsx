@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import UserItem from "./components/UserItem";
 import Account from "./types/account.type";
-import { database } from './services/Firebase-Config';
+import { database, storage } from './services/Firebase-Config';
 import {
   collection,
   getDocs,
@@ -10,6 +10,11 @@ import {
   updateDoc,
   doc
 } from 'firebase/firestore';
+import {
+  ref, 
+  getDownloadURL,
+  uploadBytesResumable
+} from 'firebase/storage';
 import { ToastContainer, toast } from 'react-toastify';
 
 
@@ -18,16 +23,17 @@ const App = () => {
   const [users, setUsers] = useState<Account[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-
+  const [avatar, setAvatar] = useState("");
+  const [progress, setProgress] = useState(0);
 
 
   useEffect(() => {
     getAccounts();
   }, []);
+
 
   const getAccounts = () => {
     setIsLoading(true)
@@ -39,7 +45,8 @@ const App = () => {
           firstName: doc.data().firstName,
           lastName: doc.data().lastName,
           email: doc.data().email,
-          isApproved: true
+          isApproved: true,
+          avatar: doc.data().avatar
         }))
       )
       setIsLoading(false)
@@ -66,25 +73,50 @@ const App = () => {
 
   const addUser = () => {
     setIsLoading(true)
-    addDoc(collection(database, "accounts"), {
-      firstName: firstName,
-      lastName: lastName,
-      email: email
+
+
+
+    const storageRef = ref(storage, `avatars/${avatar.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, avatar);
+    uploadTask.on("state_changed", (snapshot) => {
+      const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+      setProgress(prog);
+    }, (error) => console.log(error), () => {
+
+      getDownloadURL(uploadTask.snapshot.ref)
+      .then(async(downloadURL) => {
+
+        addDoc(collection(database, "accounts"), {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          avatar: downloadURL
+        })
+        .then(results => {
+          toast.success('Account created')
+          setIsLoading(false)
+          getAccounts()
+        })
+        .catch(error => {
+          toast.error(error.message)
+          setIsLoading(false)
+        })
+
+      })
+      .catch(error => {
+        setIsLoading(false)
+        toast.error(error.message)
+      })
+
     })
-    .then(results => {
-      toast.success('Account created')
-      setIsLoading(false)
-      getAccounts()
-    })
-    .catch(error => {
-      toast.error(error.message)
-      setIsLoading(false)
-    })
+
+
+    
   };
 
   const updateUser = async(account: Account) => {
-    const ref = doc(database, "accounts", account.id);
-    updateDoc(ref, {
+    const refcollection = doc(database, "accounts", account.id);
+    updateDoc(refcollection, {
       firstName: account.firstName,
       lastName: account.lastName,
       email: account.email,
@@ -141,6 +173,17 @@ const App = () => {
                   type="email"
                   className="form-control"
                 />
+              </div>
+
+
+              <div className="col-sm-12">
+                <label className="form-label">{progress}</label>
+                <input
+                  onChange={(e) => {setAvatar(e.target.files[0])}}
+                  type="file"
+                  className="form-control"
+                />
+
               </div>
 
               <div className="col-sm-12">

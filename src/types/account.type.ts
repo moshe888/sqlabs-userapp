@@ -3,5 +3,6 @@ export default interface Account {
     firstName: string,
     lastName: string,
     email: string,
-    isApproved: boolean
+    isApproved: boolean,
+    avatar: string
 }

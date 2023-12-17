@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
-import axios, { CanceledError } from "axios";
+ 
+import { CanceledError } from 'axios';
+
 import User from "./components/User";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  username: string;
-}
+import userService from "./services/user-service";
+
+import create from "./services/http-service";
 
 const App = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const [id, setId] = useState("");
+  const [id, setId] = useState(0);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -22,26 +21,36 @@ const App = () => {
   useEffect(() => {
     const controller = new AbortController();
     setIsLoading(true);
-    axios
-      .get<User[]>("https://jsonplaceholder.typicode.com/users")
-      .then((results) => {
-        setUsers(results.data);
-        setIsLoading(false);
+ const {request } = userService.getALL<User>();//?
+    request
+      .then((response) => {
+        setUsers(response.data);
       })
       .catch((err) => {
-        if(err instanceof CanceledError) return;
+  const arr = userService.getALL<User>();
+  if(arr instanceof CanceledError) return;
+        setErrorMsg(err.message);
+        setIsLoading(false);
+      }
+      )
+      .catch((err) => {
         setErrorMsg(err.message);
         setIsLoading(false);
       });
 
-      return () => controller.abort();
-  }, []);
+      return () => {
+        controller.abort();
+      };
+      
+
+   }, []);
 
   const deleteUser = (user: User) => { 
     const originalUsers = [...users];
     setUsers(users.filter((x) => x.id !== user.id));
-    axios
-      .delete("https://jsonplaceholder.typicode.com/users/" + user.id)
+
+     userService
+      .deleteUser(user.id)
       .catch((err) => {
         setErrorMsg(err.message);
         setUsers(originalUsers);
@@ -60,12 +69,12 @@ const App = () => {
     setUsers([newUser, ...users]);
 
     //API
-    axios
-      .post("https://jsonplaceholder.typicode.com/users", newUser)
+     userService
+      .createUser(newUser)
       .then(({ data: savedUser }) => {
         setUsers([savedUser, ...users]);
         setEmail("");
-        setId("");
+        setId(0);
         setName("");
         setUsername("");
       })
@@ -91,7 +100,7 @@ const App = () => {
 
     setUsers(users.map(u => u.id === user.id ? updatedUser : u));
 
-    axios.patch("https://jsonplaceholder.typicode.com/users/" + user.id)
+     userService.updateUser(updatedUser)
     .then((result) => {
       console.log(result);
       console.log(users);
@@ -116,7 +125,7 @@ const App = () => {
                 <input
                   value={id}
                   onChange={(e) => {
-                    setId(e.target.value);
+                    setId(Number(e.target.value));
                   }}
                   type="text"
                   className="form-control"

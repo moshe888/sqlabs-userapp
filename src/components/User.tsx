@@ -52,7 +52,7 @@ const User = (props: Props) => {
               <input
                 value={id}
                 onChange={(e) => {
-                  setId(e.target.value);
+                  setId(Number(e.target.value));
                 }}
                 type="text"
                 className="form-control"

@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import Account from "../types/account.type";
 
 interface Props {
-  user: User;
-  deleteAction: (user:User) => void;
-  updateAction: (user:User) => void;
-}
-
-interface User {
-    id: number; name: string; email: string; username: string;
+  user: Account;
+  deleteAction: (user:Account) => void;
+  updateAction: (user:Account) => void;
 }
 
 
-const User = (props: Props) => {
+const UserItem = (props: Props) => {
 
   const [id, setId] = useState(props.user.id);
-  const [name, setName] = useState(props.user.name);
+  const [firstName, setFirstName] = useState(props.user.firstName);
+  const [lastName, setLastName] = useState(props.user.lastName);
   const [email, setEmail] = useState(props.user.email);
-  const [username, setUsername] = useState(props.user.username);
+  const [avatar, setAvatar] = useState(props.user.avatar);
+  const [isApproved, setIsApproved] = useState(props.user.isApproved);
 
   useEffect(() => {
 
@@ -35,7 +34,9 @@ const User = (props: Props) => {
           data-bs-toggle="collapse"
           data-bs-target={`#collapse${props.user.id.toString()}`}
           aria-expanded="false"
-          aria-controls={`collapse${props.user.id.toString()}`}>{props.user.name}</button>
+          aria-controls={`collapse${props.user.id.toString()}`}>
+            {props.user.firstName} {props.user.lastName}
+          </button>
       </h2>
       
       <div
@@ -46,29 +47,38 @@ const User = (props: Props) => {
     
         
         <div className="accordion-body">
+          <div className="row">
+            <div className="col-sm-3">
+              <img src={avatar} style={{width:120, height:120}} />
+            </div>
+          </div>
         <div className="row">
             <div className="col-sm-6">
-              <label className="form-label">ID</label>
+              <label className="form-label">First name</label>
               <input
-                value={id}
+                value={firstName}
                 onChange={(e) => {
+<<<<<<< HEAD:src/components/User.tsx
                   setId(Number(e.target.value));
+=======
+                  setFirstName(e.target.value);
+>>>>>>> 159315e378d1a620abba849349d6bcff94b9c02c:src/components/UserItem.tsx
                 }}
                 type="text"
                 className="form-control"
               />
             </div>
-            <div className="col-sm-6">
-              <label className="form-label">Name</label>
+          </div>
+          <div className="col-sm-6">
+              <label className="form-label">Last name</label>
               <input
-                value={name}
+                value={lastName}
                 onChange={(e) => {
-                  setName(e.target.value);
+                  setLastName(e.target.value);
                 }}
-                type="text"
+                type="email"
                 className="form-control"
               />
-            </div>
           </div>
           <div className="row">
             <div className="col-sm-6">
@@ -82,22 +92,11 @@ const User = (props: Props) => {
                 className="form-control"
               />
             </div>
-            <div className="col-sm-6">
-              <label className="form-label">Username</label>
-              <input
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                }}
-                type="email"
-                className="form-control"
-              />
-            </div>
           </div>
           <div className="row">
             <div className="col-sm-12">
               <br />
-              <button onClick={() => {props.updateAction(props.user)}} className="btn btn-warning">Update User</button>{ " " }
+              <button onClick={() => { props.updateAction({ id, firstName, lastName, email, isApproved }) }} className="btn btn-warning">Update User</button>{ " " }
               <button onClick={() => {props.deleteAction(props.user)}} className="btn btn-danger">Delete User</button>
             </div>
           </div>
@@ -107,4 +106,4 @@ const User = (props: Props) => {
   );
 };
 
-export default User;
+export default UserItem;

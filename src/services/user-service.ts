@@ -1,3 +1,4 @@
+<<<<<<< HEAD
  import create from "./http-service";
 
 interface User {
@@ -36,3 +37,15 @@ export default   create("/users");
 //     }
 
 // }
+=======
+import create from "./http-service";
+
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+    username: string;
+  }
+
+export default create('/users');
+>>>>>>> 159315e378d1a620abba849349d6bcff94b9c02c
